@@ -11,22 +11,35 @@
             font-family: 'Poppins', sans-serif; 
             box-sizing: border-box;
         }
+        
+        /* ESTILOS DE NAVEGACIÓN */
         .tab-active {
             background-color: #eff6ff;
             color: #2563eb;
             border-radius: 9999px;
         }
+        @media (min-width: 768px) {
+            .tab-active {
+                border-radius: 0.75rem; /* Bordes menos redondeados en PC */
+            }
+        }
+
         .paid-bg { background-color: #d1fae5; color: #065f46; }
         .pending-bg { background-color: #fefce8; color: #854d0e; }
         .overdue-bg { background-color: #fee2e2; color: #991b1b; }
+        
         .calendar-day { min-height: 80px; }
+        @media (min-width: 768px) {
+            .calendar-day { min-height: 120px; }
+        }
+
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { 
             from { opacity: 0; transform: translateY(10px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* ESTILOS PARA ALERTA DE 3 DÍAS (Parpadeo / Glow Rojo) */
+        /* ESTILOS PARA ALERTA DE 3 DÍAS */
         @keyframes pulse-red-glow {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 1); }
             70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.5); }
@@ -34,7 +47,7 @@
         }
         .warning-pulse {
             animation: pulse-red-glow 2s infinite;
-            background-color: #fef2f2 !important; /* Fondo rojo ultra claro */
+            background-color: #fef2f2 !important;
         }
 
         /* ESTILOS PARA IMPRESIÓN DEL TICKET */
@@ -51,176 +64,208 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 max-w-md mx-auto min-h-screen shadow-2xl relative">
-    <div class="min-h-full flex flex-col">
-        <header class="bg-white shadow-md p-4 sticky top-0 z-10">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <img src="JUMP.PNG" alt="Logo Jumping Fitness" class="w-12 h-12 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
-                    <div>
-                        <h1 class="text-xl font-bold text-gray-900">Jumping Fitness</h1>
-                        <p class="text-sm text-gray-500">Gestión de Pagos</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-gray-500">Total Alumnos</p>
-                    <p class="text-2xl font-bold text-blue-600" id="totalStudents">0</p>
-                </div>
-            </div>
-        </header>
-
-        <main class="flex-grow p-4 pb-24">
-            <div id="studentsContent" class="tab-content fade-in">
-                <div class="bg-white rounded-xl shadow-lg p-4 mb-6">
-                    <h2 class="text-lg font-bold text-gray-900 mb-4">➕ Registrar Alumno</h2>
-                    <form id="studentForm" class="space-y-4">
-                        <div>
-                            <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                            <input type="text" id="studentName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="studentPhone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono (10 dígitos)</label>
-                            <input type="tel" id="studentPhone" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="monthlyFee" class="block text-sm font-medium text-gray-700 mb-1">Mensualidad ($)</label>
-                            <input type="number" id="monthlyFee" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="registrationDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inscripción</label>
-                            <input type="date" id="registrationDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="customPaymentDates" class="block text-sm font-medium text-gray-700 mb-1">Fechas de Pago (opcional)</label>
-                            <input type="text" id="customPaymentDates" placeholder="Ej: 15/01/25, 15/02/25" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-xs text-gray-500 mt-1">Formato: DD/MM/AA. Si no, se usará el día de inscripción.</p>
-                        </div>
-                        <button type="submit" id="btnSubmitStudent" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                            Agregar Alumno
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-lg p-4">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">👥 Lista de Alumnos</h3>
-                    <div id="studentsListContainer" class="space-y-3">
-                        <p class="text-center text-gray-500 py-4">Cargando base de datos...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="paymentsContent" class="tab-content hidden fade-in">
-                <div class="bg-white rounded-xl shadow-lg p-4">
-                    <h2 class="text-lg font-bold text-gray-900 mb-4">💳 Control de Pagos</h2>
-                    
-                    <div class="mb-4 bg-gray-50 p-3 rounded-lg">
-                        <label for="paymentMonth" class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Mes</label>
-                        <select id="paymentMonth" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePaymentsView()"></select>
-                    </div>
-
-                    <div class="mb-4 relative">
-                        <label for="paymentSearch" class="sr-only">Buscar Alumno</label>
-                        <input type="text" id="paymentSearch" placeholder="🔍 Buscar por nombre..." class="w-full px-4 pl-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="updatePaymentsView()">
-                        <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mb-4 text-center">
-                        <div class="bg-green-50 p-2 rounded-lg">
-                            <h4 class="text-xs font-semibold text-green-800">Pagados</h4>
-                            <p class="text-xl font-bold text-green-600" id="paidCount">0</p>
-                        </div>
-                        <div class="bg-red-50 p-2 rounded-lg">
-                            <h4 class="text-xs font-semibold text-red-800">Pendientes</h4>
-                            <p class="text-xl font-bold text-red-600" id="pendingCount">0</p>
-                        </div>
-                        <div class="bg-blue-50 p-3 rounded-lg col-span-2">
-                            <h4 class="text-sm font-semibold text-blue-800">Total Recaudado del Mes</h4>
-                            <p class="text-2xl font-bold text-blue-600" id="totalCollected">$0.00</p>
-                        </div>
-                    </div>
-                    
-                    <div id="paymentsListContainer" class="space-y-3"></div>
-                </div>
-            </div>
-
-            <div id="calendarContent" class="tab-content hidden fade-in">
-                <div class="bg-white rounded-xl shadow-lg p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <button onclick="previousMonth()" class="p-2 rounded-full hover:bg-gray-100">&larr;</button>
-                        <h2 id="currentMonthYear" class="text-lg font-bold text-gray-900"></h2>
-                        <button onclick="nextMonth()" class="p-2 rounded-full hover:bg-gray-100">&rarr;</button>
-                    </div>
-
-                    <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500 mb-2">
-                        <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1" id="calendarGrid"></div>
-                </div>
-            </div>
-
-            <div id="storageContent" class="tab-content hidden fade-in">
-                <div class="bg-white rounded-xl shadow-lg p-4">
-                    <h2 class="text-lg font-bold text-gray-900 mb-4">💾 Gestión de Datos</h2>
-                    <div class="space-y-4">
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <h3 class="font-semibold text-blue-800 mb-2">📤 Exportar Datos</h3>
-                            <p class="text-sm text-blue-700 mb-3">Descarga una copia local de seguridad.</p>
-                            <button onclick="exportData()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700">Descargar Respaldo</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
-                <h2 class="text-lg font-bold text-gray-900 mb-4">✏️ Editar Alumno</h2>
-                <form id="editForm" class="space-y-4">
-                    <input type="hidden" id="editStudentId">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                        <input type="text" id="editStudentName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                        <input type="tel" id="editStudentPhone" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Mensualidad ($)</label>
-                        <input type="number" id="editMonthlyFee" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inscripción</label>
-                        <input type="date" id="editRegistrationDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <p class="text-[10px] text-gray-500 mt-1">Si la cambias, los próximos días de cobro se recalcularán automáticamente.</p>
-                    </div>
-                    <div class="flex gap-2 mt-6">
-                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors">Cancelar</button>
-                        <button type="submit" id="btnSaveEdit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Guardar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<body class="bg-gray-100 h-screen overflow-hidden text-gray-800">
+    <div class="flex flex-col md:flex-row h-full w-full">
         
-        <nav class="bg-white shadow-[0_-2px_5px_rgba(0,0,0,0.1)] p-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-10 no-print">
-            <div class="grid grid-cols-4 gap-1">
-                <button onclick="showTab('students')" id="studentsTab" class="flex flex-col items-center py-2 px-1 text-xs font-medium transition-colors">
-                    <span class="text-xl">👥</span>
+        <nav class="bg-white shadow-[0_-2px_5px_rgba(0,0,0,0.1)] md:shadow-[2px_0_5px_rgba(0,0,0,0.1)] fixed bottom-0 left-0 right-0 z-50 md:relative md:w-64 md:flex-shrink-0 transition-all no-print">
+            
+            <div class="hidden md:flex flex-col items-center justify-center py-8 border-b border-gray-100">
+                <img src="JUMP.PNG" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-sm mb-3" onerror="this.src='https://via.placeholder.com/150'">
+                <h1 class="text-lg font-bold text-gray-900 text-center uppercase tracking-wide">Jumping<br>Fitness</h1>
+            </div>
+
+            <div class="flex flex-row md:flex-col justify-around md:justify-start md:p-4 gap-1 md:gap-2 h-full">
+                <button onclick="showTab('students')" id="studentsTab" class="flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 px-1 md:px-4 md:py-3 text-xs md:text-sm font-medium transition-colors hover:bg-blue-50">
+                    <span class="text-xl md:text-2xl md:mr-3">👥</span>
                     <span>Alumnos</span>
                 </button>
-                <button onclick="showTab('payments')" id="paymentsTab" class="flex flex-col items-center py-2 px-1 text-xs font-medium transition-colors">
-                    <span class="text-xl">💳</span>
+                <button onclick="showTab('payments')" id="paymentsTab" class="flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 px-1 md:px-4 md:py-3 text-xs md:text-sm font-medium transition-colors hover:bg-blue-50">
+                    <span class="text-xl md:text-2xl md:mr-3">💳</span>
                     <span>Pagos</span>
                 </button>
-                <button onclick="showTab('calendar')" id="calendarTab" class="flex flex-col items-center py-2 px-1 text-xs font-medium transition-colors">
-                    <span class="text-xl">📅</span>
+                <button onclick="showTab('calendar')" id="calendarTab" class="flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 px-1 md:px-4 md:py-3 text-xs md:text-sm font-medium transition-colors hover:bg-blue-50">
+                    <span class="text-xl md:text-2xl md:mr-3">📅</span>
                     <span>Calendario</span>
                 </button>
-                <button onclick="showTab('storage')" id="storageTab" class="flex flex-col items-center py-2 px-1 text-xs font-medium transition-colors">
-                    <span class="text-xl">💾</span>
+                <button onclick="showTab('storage')" id="storageTab" class="flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 px-1 md:px-4 md:py-3 text-xs md:text-sm font-medium transition-colors hover:bg-blue-50">
+                    <span class="text-xl md:text-2xl md:mr-3">💾</span>
                     <span>Datos</span>
                 </button>
             </div>
         </nav>
+
+        <div class="flex-1 flex flex-col h-full relative overflow-hidden">
+            
+            <header class="bg-white shadow-sm p-4 z-10 flex justify-between items-center">
+                <div class="flex items-center space-x-3 md:hidden">
+                    <img src="JUMP.PNG" alt="Logo" class="w-10 h-10 rounded-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
+                    <h1 class="text-lg font-bold text-gray-900">Jumping Fitness</h1>
+                </div>
+                <div class="hidden md:block">
+                    <h2 class="text-xl font-bold text-gray-800">Panel de Control</h2>
+                </div>
+                <div class="text-right bg-blue-50 px-4 py-2 rounded-lg border border-blue-100">
+                    <p class="text-xs text-blue-800 font-semibold uppercase tracking-wider">Alumnos Activos</p>
+                    <p class="text-2xl font-bold text-blue-600 leading-none" id="totalStudents">0</p>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
+                <div class="max-w-6xl mx-auto w-full">
+                    
+                    <div id="studentsContent" class="tab-content fade-in">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">➕ Registrar Nuevo Alumno</h2>
+                            <form id="studentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                                    <input type="text" id="studentName" required class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono (10 dígitos)</label>
+                                    <input type="tel" id="studentPhone" required class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mensualidad ($)</label>
+                                    <input type="number" id="monthlyFee" required min="0" step="0.01" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inscripción</label>
+                                    <input type="date" id="registrationDate" required class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fechas de Pago Personalizadas (opcional)</label>
+                                    <input type="text" id="customPaymentDates" placeholder="Ej: 15/01/25, 15/02/25" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors">
+                                    <p class="text-xs text-gray-500 mt-1">Formato: DD/MM/AA. Si se deja en blanco, se usará automáticamente el día de inscripción.</p>
+                                </div>
+                                <div class="md:col-span-2 mt-2">
+                                    <button type="submit" id="btnSubmitStudent" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+                                        Agregar Alumno
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="bg-transparent">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">👥 Directorio de Alumnos</h3>
+                            <div id="studentsListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <p class="text-gray-500 py-4 col-span-full">Cargando base de datos...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="paymentsContent" class="tab-content hidden fade-in">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:p-6 mb-6">
+                            <h2 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">💳 Filtrar y Buscar Pagos</h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Mes de Cobro</label>
+                                    <select id="paymentMonth" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updatePaymentsView()"></select>
+                                </div>
+
+                                <div class="relative bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Buscar</label>
+                                    <input type="text" id="paymentSearch" placeholder="Nombre del alumno..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" oninput="updatePaymentsView()">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                                <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                                    <h4 class="text-xs font-bold text-green-800 uppercase">Al Día</h4>
+                                    <p class="text-3xl font-black text-green-600" id="paidCount">0</p>
+                                </div>
+                                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                                    <h4 class="text-xs font-bold text-red-800 uppercase">Pendientes</h4>
+                                    <p class="text-3xl font-black text-red-600" id="pendingCount">0</p>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 col-span-2 md:col-span-1 flex flex-col justify-center">
+                                    <h4 class="text-xs font-bold text-blue-800 uppercase mb-1">Ingreso Mensual</h4>
+                                    <p class="text-2xl md:text-3xl font-black text-blue-600" id="totalCollected">$0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="paymentsListContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                    </div>
+
+                    <div id="calendarContent" class="tab-content hidden fade-in">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:p-8">
+                            <div class="flex justify-between items-center mb-6">
+                                <button onclick="previousMonth()" class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 font-bold transition-colors">&larr; Anterior</button>
+                                <h2 id="currentMonthYear" class="text-xl md:text-2xl font-bold text-gray-900 capitalize"></h2>
+                                <button onclick="nextMonth()" class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 font-bold transition-colors">Siguiente &rarr;</button>
+                            </div>
+
+                            <div class="grid grid-cols-7 gap-1 md:gap-2 text-center text-xs md:text-sm font-bold text-gray-400 mb-2 uppercase">
+                                <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1 md:gap-2" id="calendarGrid"></div>
+                        </div>
+                    </div>
+
+                    <div id="storageContent" class="tab-content hidden fade-in">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="p-3 bg-blue-100 rounded-lg text-blue-600 text-xl">☁️</div>
+                                    <div>
+                                        <h2 class="text-lg font-bold text-gray-900">Sincronización Activa</h2>
+                                        <p class="text-sm text-gray-500">Firebase Firestore</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-4">Todos tus datos se están guardando automáticamente en la nube. No perderás información si cambias de dispositivo.</p>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="p-3 bg-green-100 rounded-lg text-green-600 text-xl">📥</div>
+                                    <div>
+                                        <h2 class="text-lg font-bold text-gray-900">Respaldo Local</h2>
+                                        <p class="text-sm text-gray-500">Formato JSON</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-4">Descarga una copia de seguridad en tu computadora por seguridad adicional.</p>
+                                <button onclick="exportData()" class="w-full bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700 transition-colors shadow-sm">Descargar Respaldo Ahora</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-md transform transition-all">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">✏️ Editar Información</h2>
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" id="editStudentId">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo</label>
+                    <input type="text" id="editStudentName" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Teléfono</label>
+                    <input type="tel" id="editStudentPhone" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Mensualidad ($)</label>
+                        <input type="number" id="editMonthlyFee" required min="0" step="0.01" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Inscripción</label>
+                        <input type="date" id="editRegistrationDate" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 bg-gray-50 p-2 rounded border border-gray-100">Si cambias la fecha de inscripción, los próximos días de cobro se ajustarán de inmediato.</p>
+                <div class="flex gap-3 mt-8">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors">Cancelar</button>
+                    <button type="submit" id="btnSaveEdit" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-md">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script type="module">
@@ -252,7 +297,7 @@
         window.generateTicket = generateTicket;
         window.markAsPaid = markAsPaid;
         window.markAsUnpaid = markAsUnpaid;
-        window.sendWhatsAppReminder = sendWhatsAppReminder; // EXPONER FUNCIÓN DE WHATSAPP
+        window.sendWhatsAppReminder = sendWhatsAppReminder;
         window.previousMonth = previousMonth;
         window.nextMonth = nextMonth;
         window.exportData = exportData;
@@ -274,10 +319,10 @@
                 });
 
                 updateAllViews();
-                showNotification('✅ Datos sincronizados con la nube', 'success');
+                showNotification('✅ Datos sincronizados', 'success');
             } catch (error) {
                 console.error("Error cargando datos:", error);
-                showNotification('❌ Error al conectar con la base de datos', 'error');
+                showNotification('❌ Error de conexión', 'error');
             }
         }
 
@@ -386,9 +431,9 @@
                 updateAllViews();
                 this.reset();
                 document.getElementById('registrationDate').value = new Date().toISOString().split('T')[0];
-                showNotification(`✅ ${newStudent.name} ha sido agregado.`, 'success');
+                showNotification(`✅ Alumno guardado`, 'success');
             } catch (error) {
-                showNotification('❌ Hubo un error al guardar', 'error');
+                showNotification('❌ Error al guardar', 'error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Agregar Alumno';
@@ -397,7 +442,7 @@
 
         function updateStudentsTable() {
             const container = document.getElementById('studentsListContainer');
-            container.innerHTML = students.length === 0 ? `<p class="text-center text-gray-500 py-4">No hay alumnos registrados.</p>` : '';
+            container.innerHTML = students.length === 0 ? `<div class="col-span-full text-center text-gray-500 py-8 bg-white rounded-xl border border-dashed border-gray-300"><p class="text-xl mb-2">📭</p><p>Aún no hay alumnos registrados.</p></div>` : '';
             const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
 
             sortedStudents.forEach(student => {
@@ -420,25 +465,29 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg p-4 shadow-sm border fade-in';
+                card.className = 'bg-white rounded-xl p-5 shadow-sm border border-gray-100 fade-in flex flex-col justify-between hover:shadow-md transition-shadow';
                 card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-bold text-md text-gray-800">${student.name}</p>
-                            <p class="text-sm text-gray-500">📞 ${student.phone}</p>
-                            <p class="text-sm text-gray-500">💲 $${student.monthlyFee.toFixed(2)} /mes</p>
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="font-bold text-lg text-gray-800 leading-tight">${student.name}</p>
+                            <span class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md ${statusClass} flex-shrink-0 ml-2">${statusText}</span>
                         </div>
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">${statusText}</span>
+                        <div class="space-y-1 mb-4">
+                            <p class="text-sm text-gray-500 flex items-center gap-2"><span class="text-lg">📞</span> ${student.phone}</p>
+                            <p class="text-sm text-gray-500 flex items-center gap-2"><span class="text-lg">💰</span> $${student.monthlyFee.toFixed(2)} <span class="text-xs">/mes</span></p>
+                        </div>
                     </div>
-                    <div class="border-t my-3"></div>
-                    <div class="flex justify-between items-center text-sm">
-                        <div>
-                            <p class="text-xs text-gray-500">Próximo Pago:</p>
-                            <p class="font-medium text-blue-600">${nextPaymentText}</p>
-                        </div>
-                        <div class="flex justify-end gap-2">
-                             <button onclick="openEditModal('${student.id}')" class="text-blue-600 font-semibold p-2 rounded-md hover:bg-blue-50 transition-colors">Editar</button>
-                             <button onclick="deleteStudent('${student.id}')" class="text-red-600 font-semibold p-2 rounded-md hover:bg-red-50 transition-colors">Eliminar</button>
+                    <div>
+                        <div class="border-t border-gray-100 my-3"></div>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-gray-400">Próximo Pago</p>
+                                <p class="font-semibold text-blue-600">${nextPaymentText}</p>
+                            </div>
+                            <div class="flex gap-1">
+                                 <button onclick="openEditModal('${student.id}')" class="text-blue-600 font-bold px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-sm">Editar</button>
+                                 <button onclick="deleteStudent('${student.id}')" class="text-red-600 font-bold px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors text-sm">Borrar</button>
+                            </div>
                         </div>
                     </div>`;
                 container.appendChild(card);
@@ -510,13 +559,12 @@
 
                 updateAllViews();
                 closeEditModal();
-                showNotification(`✅ Alumno actualizado y calendario recalculado.`, 'success');
+                showNotification(`✅ Datos actualizados`, 'success');
             } catch (error) {
-                console.error("Error editando: ", error);
                 showNotification('❌ Error al actualizar', 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Guardar';
+                btn.textContent = 'Guardar Cambios';
             }
         });
 
@@ -528,14 +576,13 @@
                     students = students.filter(s => s.id !== studentId);
                     delete payments[studentId]; 
                     updateAllViews();
-                    showNotification(`🗑️ ${student.name} eliminado.`, 'success');
+                    showNotification(`🗑️ Borrado exitoso`, 'success');
                 } catch (error) {
-                    showNotification('❌ Error al eliminar.', 'error');
+                    showNotification('❌ Error al eliminar', 'error');
                 }
             }
         }
 
-        // LÓGICA DE WHATSAPP
         function sendWhatsAppReminder(studentId, monthKey) {
             const student = students.find(s => s.id === studentId);
             if (!student) return;
@@ -544,22 +591,14 @@
             const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             const monthName = monthNames[parseInt(month) - 1] + ' ' + year;
 
-            // Limpiar el teléfono de espacios, guiones o paréntesis
             let phone = student.phone.replace(/\D/g, '');
-            
-            // Asumir código de México (+52) si solo escribieron 10 dígitos
-            if (phone.length === 10) {
-                phone = '52' + phone;
-            }
+            if (phone.length === 10) phone = '52' + phone;
 
             const message = `Hola ${student.name}, Jumping Fitness te recuerda que tu mensualidad de ${monthName} está próxima a vencer. ¡Te esperamos para seguir saltando! 🦘💪`;
             const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-            
-            window.open(whatsappUrl, '_blank');
+            window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
         }
 
-        // VISTA DE PAGOS CON ALERTA DE 3 DÍAS
         function updatePaymentsView() {
             const selectedMonth = document.getElementById('paymentMonth').value;
             const searchTerm = document.getElementById('paymentSearch').value.toLowerCase();
@@ -576,17 +615,15 @@
             studentsForMonth.sort((a, b) => a.name.localeCompare(b.name));
 
             if (studentsForMonth.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-500 py-4">No se encontraron alumnos para este mes.</p>`;
+                container.innerHTML = `<div class="col-span-full text-center text-gray-500 py-8 bg-white rounded-xl border border-dashed border-gray-300"><p>No se encontraron registros para este mes.</p></div>`;
             } else {
                 studentsForMonth.forEach(student => {
                     const isPaid = payments[student.id]?.[selectedMonth];
                     let isWarning = false;
                     let warningText = '';
 
-                    // CÁLCULO DE DÍAS RESTANTES
                     if (!isPaid) {
                         pendingCount++;
-                        // Buscar la fecha de cobro específica de este mes
                         const dueDateStr = student.paymentDates.find(d => d.startsWith(selectedMonth));
                         if (dueDateStr) {
                             const today = new Date();
@@ -595,7 +632,6 @@
                             const diffTime = dueDate.getTime() - today.getTime();
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                             
-                            // Si faltan 3 días o menos, o si ya se pasó la fecha
                             if (diffDays >= 0 && diffDays <= 3) {
                                 isWarning = true;
                                 warningText = ` (Vence en ${diffDays} día${diffDays !== 1 ? 's' : ''})`;
@@ -609,44 +645,42 @@
                         totalCollected += student.monthlyFee;
                     }
 
-                    // TICKET Y BOTÓN DE WHATSAPP
                     const ticketButton = isPaid 
-                        ? `<button onclick="generateTicket('${student.id}', '${selectedMonth}')" class="p-2 text-gray-500 hover:text-blue-600" title="Ver Ticket">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        ? `<button onclick="generateTicket('${student.id}', '${selectedMonth}')" class="p-2 bg-gray-50 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="Ver Ticket">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                              </svg>
                            </button>` 
                         : '';
 
                     const whatsappButton = !isPaid 
-                        ? `<button onclick="sendWhatsAppReminder('${student.id}', '${selectedMonth}')" class="p-2 text-green-500 hover:text-green-600 transition-colors" title="Enviar Recordatorio por WhatsApp">
+                        ? `<button onclick="sendWhatsAppReminder('${student.id}', '${selectedMonth}')" class="p-2 bg-green-50 rounded-lg text-green-500 hover:text-green-700 hover:bg-green-100 transition-colors" title="Enviar WhatsApp">
                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
                              </svg>
                            </button>`
                         : '';
 
-                    // ASIGNAR CLASES DE ALERTA SI APLICA
-                    const cardClass = `bg-white rounded-lg p-3 shadow-sm border transition-all ${isWarning ? 'warning-pulse border-red-400' : 'border-gray-200'}`;
+                    const cardClass = `bg-white rounded-xl p-4 shadow-sm border transition-all flex flex-col justify-between ${isWarning ? 'warning-pulse border-red-400' : 'border-gray-100 hover:shadow-md'}`;
 
                     const card = document.createElement('div');
                     card.className = cardClass;
                     card.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <p class="font-semibold ${isWarning ? 'text-red-900' : 'text-gray-800'}">${student.name}</p>
-                                <p class="text-sm ${isPaid ? 'text-green-600' : (isWarning ? 'text-red-600 font-bold' : 'text-orange-500')}">
-                                    ${isPaid ? `✅ Pagado el ${formatDate(isPaid.date)}` : `⏰ Pendiente${warningText}`}
-                                </p>
-                            </div>
-                            <div class="flex items-center space-x-2">
+                        <div class="mb-4">
+                            <p class="font-bold text-lg ${isWarning ? 'text-red-900' : 'text-gray-800'}">${student.name}</p>
+                            <p class="text-sm mt-1 ${isPaid ? 'text-green-600 bg-green-50 inline-block px-2 py-0.5 rounded' : (isWarning ? 'text-red-600 font-bold bg-red-50 inline-block px-2 py-0.5 rounded' : 'text-orange-600 bg-orange-50 inline-block px-2 py-0.5 rounded')}">
+                                ${isPaid ? `✅ Pagado: ${formatDate(isPaid.date)}` : `⏰ Pendiente${warningText}`}
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                            <div class="flex space-x-2">
                                 ${whatsappButton}
                                 ${ticketButton}
-                                <button onclick="${isPaid ? `markAsUnpaid('${student.id}', '${selectedMonth}')` : `markAsPaid('${student.id}', '${selectedMonth}')`}" 
-                                        class="px-3 py-2 text-xs font-semibold rounded-lg ${isPaid ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                                    ${isPaid ? 'Anular' : 'Pagar'}
-                                </button>
                             </div>
+                            <button onclick="${isPaid ? `markAsUnpaid('${student.id}', '${selectedMonth}')` : `markAsPaid('${student.id}', '${selectedMonth}')`}" 
+                                    class="px-4 py-2 text-sm font-bold rounded-lg transition-colors ${isPaid ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'}">
+                                ${isPaid ? 'Deshacer' : 'Registrar Pago'}
+                            </button>
                         </div>`;
                     container.appendChild(card);
                 });
@@ -667,42 +701,43 @@
 
             const modalBackdrop = document.createElement('div');
             modalBackdrop.id = 'ticketModal';
-            modalBackdrop.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
+            modalBackdrop.className = 'fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm';
             modalBackdrop.onclick = e => { if(e.target === modalBackdrop) e.target.remove(); };
 
             const ticketContent = `
-                <div id="ticketContent" class="bg-white p-6 w-full max-w-sm mx-auto shadow-2xl relative">
-                    <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
-                        <img src="JUMP.PNG" alt="Logo" class="w-16 h-16 mx-auto mb-2 rounded-full object-cover">
-                        <h2 class="text-xl font-bold text-gray-800 uppercase tracking-wider">Jumping Fitness</h2>
-                        <p class="text-xs text-gray-500">Comprobante de Pago</p>
+                <div id="ticketContent" class="bg-white p-8 w-full max-w-sm mx-auto shadow-2xl relative rounded-xl border border-gray-100">
+                    <div class="text-center border-b-2 border-dashed border-gray-200 pb-4 mb-5">
+                        <img src="JUMP.PNG" alt="Logo" class="w-20 h-20 mx-auto mb-3 rounded-full object-cover shadow-sm">
+                        <h2 class="text-xl font-black text-gray-800 uppercase tracking-widest">Jumping Fitness</h2>
+                        <p class="text-sm text-gray-500 mt-1">Comprobante Oficial</p>
                     </div>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Fecha de Emisión:</span>
-                            <span class="font-medium">${formatDate(new Date().toISOString().split('T')[0])}</span>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <span class="text-gray-500 font-medium">Emisión:</span>
+                            <span class="font-bold text-gray-900">${formatDate(new Date().toISOString().split('T')[0])}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Alumno:</span>
-                            <span class="font-bold text-gray-900">${student.name}</span>
+                        <div class="flex justify-between items-center p-2">
+                            <span class="text-gray-500 font-medium">Alumno:</span>
+                            <span class="font-bold text-gray-900 text-right">${student.name}</span>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500">Concepto:</span>
-                            <span class="font-medium">Mensualidad ${monthName}</span>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <span class="text-gray-500 font-medium">Concepto:</span>
+                            <span class="font-bold text-gray-900 text-right">Mes de ${monthName}</span>
                         </div>
-                         <div class="flex justify-between">
-                            <span class="text-gray-500">Fecha de Pago:</span>
-                            <span class="font-medium">${formatDate(payment.date)}</span>
+                         <div class="flex justify-between items-center p-2">
+                            <span class="text-gray-500 font-medium">Pagado el:</span>
+                            <span class="font-bold text-gray-900">${formatDate(payment.date)}</span>
                         </div>
                     </div>
-                    <div class="border-t-2 border-dashed border-gray-300 my-4 pt-2">
-                        <div class="flex justify-between items-center text-lg font-bold">
+                    <div class="border-t-2 border-dashed border-gray-200 mt-5 pt-4">
+                        <div class="flex justify-between items-center text-xl font-black text-blue-600 bg-blue-50 p-3 rounded-lg">
                             <span>TOTAL</span>
                             <span>$${student.monthlyFee.toFixed(2)}</span>
                         </div>
                     </div>
-                    <div class="mt-6 flex gap-2 no-print">
-                        <button onclick="document.getElementById('ticketModal').remove()" class="flex-1 bg-gray-200 text-gray-800 py-2 rounded font-medium hover:bg-gray-300">Cerrar</button>
+                    <div class="mt-6 flex gap-3 no-print">
+                        <button onclick="window.print()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-lg font-bold hover:bg-blue-700 shadow-sm">Imprimir</button>
+                        <button onclick="document.getElementById('ticketModal').remove()" class="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-bold hover:bg-gray-200">Cerrar</button>
                     </div>
                 </div>
             `;
@@ -722,14 +757,12 @@
 
             try {
                 await setDoc(doc(db, "payments", paymentId), paymentData);
-                
                 if (!payments[studentId]) payments[studentId] = {};
                 payments[studentId][month] = { date: paymentData.date, amount: paymentData.amount };
-                
                 updateAllViews();
-                showNotification(`✅ Pago registrado.`, 'success');
+                showNotification(`✅ Pago exitoso`, 'success');
             } catch (error) {
-                showNotification('❌ Error al registrar el pago.', 'error');
+                showNotification('❌ Fallo al guardar', 'error');
             }
         }
 
@@ -740,10 +773,10 @@
                 if (payments[studentId]?.[month]) {
                     delete payments[studentId][month];
                     updateAllViews();
-                    showNotification(`Pago anulado.`, 'warning');
+                    showNotification(`Deshecho`, 'warning');
                 }
             } catch (error) {
-                showNotification('❌ Error al anular.', 'error');
+                showNotification('❌ Error', 'error');
             }
         }
 
@@ -761,15 +794,19 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day border border-gray-100 p-1 bg-white text-center text-sm flex flex-col items-center cursor-pointer hover:bg-gray-50';
+                dayCell.className = 'calendar-day border border-gray-100 p-2 bg-gray-50 rounded-lg text-center flex flex-col items-center cursor-pointer hover:bg-blue-50 transition-colors hover:border-blue-200';
                 dayCell.onclick = () => openDayModal(year, month, day);
                 
                 const dayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const hasScheduled = students.some(s => s.paymentDates?.includes(dayString));
-                const indicator = hasScheduled ? `<div class="mt-2 mx-auto w-2 h-2 bg-blue-500 rounded-full"></div>` : '';
+                const scheduledStudents = students.filter(s => s.paymentDates?.includes(dayString));
                 const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
                 
-                dayCell.innerHTML = `<span class="${isToday ? 'bg-blue-600 text-white rounded-full px-1.5 py-0.5' : ''}">${day}</span>${indicator}`;
+                let indicators = '';
+                if(scheduledStudents.length > 0) {
+                    indicators = `<div class="mt-auto bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded w-full line-clamp-1">${scheduledStudents.length} cobro(s)</div>`;
+                }
+
+                dayCell.innerHTML = `<span class="font-bold text-sm ${isToday ? 'bg-blue-600 text-white rounded-md w-7 h-7 flex items-center justify-center shadow-sm' : 'text-gray-600'}">${day}</span>${indicators}`;
                 grid.appendChild(dayCell);
             }
         }
@@ -782,48 +819,44 @@
             relevantStudents.sort((a, b) => a.name.localeCompare(b.name));
             
             const modalBackdrop = document.createElement('div');
-            modalBackdrop.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modalBackdrop.className = 'fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm';
             modalBackdrop.onclick = e => { if(e.target === modalBackdrop) e.target.remove(); };
 
             const modal = document.createElement('div');
-            modal.className = 'bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto';
+            modal.className = 'bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-hidden flex flex-col';
 
             let studentListHTML = relevantStudents.length > 0 ? relevantStudents.map(student => {
                 const isPaid = payments[student.id]?.[monthKey];
                 return `
-                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div class="flex items-center justify-between bg-gray-50 border border-gray-100 p-4 rounded-xl mb-3">
                         <div>
-                            <p class="font-semibold">${student.name}</p>
-                            <p class="text-sm ${isPaid ? 'text-green-600' : 'text-red-600'}">${isPaid ? 'Pagado' : 'Pendiente'}</p>
+                            <p class="font-bold text-gray-800">${student.name}</p>
+                            <p class="text-xs font-semibold mt-1 ${isPaid ? 'text-green-600' : 'text-orange-500'}">${isPaid ? '✅ Ya pagó' : '⏰ Esperando pago'}</p>
                         </div>
                         <button onclick="${isPaid ? `markAsUnpaidFromModal('${student.id}', '${monthKey}', this)` : `markAsPaidFromModal('${student.id}', '${monthKey}', this)`}"
-                                class="px-3 py-1 text-xs font-semibold rounded-lg ${isPaid ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                            ${isPaid ? 'Anular' : 'Pagar'}
+                                class="px-4 py-2 text-xs font-bold rounded-lg transition-colors ${isPaid ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'}">
+                            ${isPaid ? 'Anular' : 'Cobrar'}
                         </button>
                     </div>`;
-            }).join('') : `<p class="text-center text-gray-500 py-4">No hay pagos programados para este día.</p>`;
+            }).join('') : `<div class="text-center text-gray-500 py-8"><p class="text-2xl mb-2">🍃</p><p>Día libre. No hay cobros programados.</p></div>`;
 
             modal.innerHTML = `
-                <div class="p-6">
-                    <h3 class="text-xl font-bold mb-4">Pagos del ${formatDate(dayString)}</h3>
-                    <div class="space-y-2">${studentListHTML}</div>
-                    <button onclick="this.closest('.fixed').remove()" class="w-full mt-6 bg-gray-200 py-2 rounded-lg">Cerrar</button>
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900">Agenda: ${formatDate(dayString)}</h3>
+                </div>
+                <div class="p-6 overflow-y-auto flex-1">
+                    ${studentListHTML}
+                </div>
+                <div class="p-4 border-t border-gray-100 bg-gray-50">
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors">Cerrar Agenda</button>
                 </div>`;
             
             modalBackdrop.appendChild(modal);
             document.body.appendChild(modalBackdrop);
         }
         
-        function markAsPaidFromModal(studentId, monthKey, buttonEl) {
-            markAsPaid(studentId, monthKey);
-            buttonEl.closest('.fixed').remove();
-        }
-
-        function markAsUnpaidFromModal(studentId, monthKey, buttonEl) {
-            markAsUnpaid(studentId, monthKey);
-            buttonEl.closest('.fixed').remove();
-        }
-
+        function markAsPaidFromModal(studentId, monthKey, buttonEl) { markAsPaid(studentId, monthKey); buttonEl.closest('.fixed').remove(); }
+        function markAsUnpaidFromModal(studentId, monthKey, buttonEl) { markAsUnpaid(studentId, monthKey); buttonEl.closest('.fixed').remove(); }
         function previousMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); updateCalendar(); }
         function nextMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); updateCalendar(); }
 
@@ -836,15 +869,15 @@
             a.download = `jumping-fitness-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showNotification('📥 Respaldo descargado.', 'success');
+            showNotification('📥 Respaldo descargado', 'success');
         }
 
         function showNotification(message, type = 'info') {
             const existing = document.querySelector('.notification');
             if (existing) existing.remove();
             const notification = document.createElement('div');
-            const colors = { success: 'bg-green-500 text-white', warning: 'bg-yellow-400 text-black', error: 'bg-red-500 text-white' };
-            notification.className = `notification fixed top-4 right-4 left-4 z-50 px-4 py-3 rounded-lg shadow-lg text-center fade-in ${colors[type] || 'bg-blue-500 text-white'}`;
+            const colors = { success: 'bg-green-600', warning: 'bg-orange-500', error: 'bg-red-600' };
+            notification.className = `notification fixed top-6 right-1/2 transform translate-x-1/2 md:translate-x-0 md:right-6 md:left-auto z-[9999] px-6 py-3 rounded-full shadow-xl text-white font-semibold text-sm fade-in ${colors[type] || 'bg-blue-600'}`;
             notification.textContent = message;
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
