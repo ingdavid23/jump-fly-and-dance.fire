@@ -26,6 +26,17 @@
             to { opacity: 1; transform: translateY(0); } 
         }
 
+        /* ESTILOS PARA ALERTA DE 3 DÍAS (Parpadeo / Glow Rojo) */
+        @keyframes pulse-red-glow {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 1); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 1); }
+        }
+        .warning-pulse {
+            animation: pulse-red-glow 2s infinite;
+            background-color: #fef2f2 !important; /* Fondo rojo ultra claro */
+        }
+
         /* ESTILOS PARA IMPRESIÓN DEL TICKET */
         @media print {
             body * { visibility: hidden; }
@@ -68,7 +79,7 @@
                             <input type="text" id="studentName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label for="studentPhone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                            <label for="studentPhone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono (10 dígitos)</label>
                             <input type="tel" id="studentPhone" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
@@ -159,6 +170,36 @@
                 </div>
             </div>
         </main>
+
+        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">✏️ Editar Alumno</h2>
+                <form id="editForm" class="space-y-4">
+                    <input type="hidden" id="editStudentId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <input type="text" id="editStudentName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <input type="tel" id="editStudentPhone" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mensualidad ($)</label>
+                        <input type="number" id="editMonthlyFee" required min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inscripción</label>
+                        <input type="date" id="editRegistrationDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-[10px] text-gray-500 mt-1">Si la cambias, los próximos días de cobro se recalcularán automáticamente.</p>
+                    </div>
+                    <div class="flex gap-2 mt-6">
+                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" id="btnSaveEdit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         
         <nav class="bg-white shadow-[0_-2px_5px_rgba(0,0,0,0.1)] p-2 fixed bottom-0 left-0 right-0 max-w-md mx-auto z-10 no-print">
             <div class="grid grid-cols-4 gap-1">
@@ -183,11 +224,9 @@
     </div>
 
     <script type="module">
-        // 1. Importaciones de Firebase (V9 Modular SDK)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 2. Configuración de Firebase (Tu conexión)
         const firebaseConfig = {
             apiKey: "AIzaSyA0eyZjj7xekKRrlY2Os1v7S3jRlfBjdD4",
             authDomain: "demoextintores.firebaseapp.com",
@@ -198,22 +237,22 @@
             measurementId: "G-EBMWB184SS"
         };
 
-        // 3. Inicialización
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variables de estado en memoria (se actualizan desde Firebase)
         let students = [];
-        let payments = {}; // Objeto modular para agrupar pagos en memoria para lectura rápida
+        let payments = {}; 
         let currentCalendarDate = new Date();
 
-        // Exponer funciones al window (necesario porque estamos en module)
         window.showTab = showTab;
         window.updatePaymentsView = updatePaymentsView;
         window.deleteStudent = deleteStudent;
+        window.openEditModal = openEditModal;
+        window.closeEditModal = closeEditModal;
         window.generateTicket = generateTicket;
         window.markAsPaid = markAsPaid;
         window.markAsUnpaid = markAsUnpaid;
+        window.sendWhatsAppReminder = sendWhatsAppReminder; // EXPONER FUNCIÓN DE WHATSAPP
         window.previousMonth = previousMonth;
         window.nextMonth = nextMonth;
         window.exportData = exportData;
@@ -221,14 +260,11 @@
         window.markAsPaidFromModal = markAsPaidFromModal;
         window.markAsUnpaidFromModal = markAsUnpaidFromModal;
 
-        // Cargar datos desde Firebase
         async function loadDataFromFirebase() {
             try {
-                // Descargar Alumnos
                 const studentsSnap = await getDocs(collection(db, "students"));
                 students = studentsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Descargar Pagos (El Historial Modular)
                 const paymentsSnap = await getDocs(collection(db, "payments"));
                 payments = {};
                 paymentsSnap.forEach(docSnap => {
@@ -245,7 +281,6 @@
             }
         }
 
-        // Helpers
         function formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString + 'T00:00:00');
@@ -266,15 +301,13 @@
             return null;
         }
 
-        // Init App
         document.addEventListener('DOMContentLoaded', () => {
             initializeMonthSelector();
             document.getElementById('registrationDate').value = new Date().toISOString().split('T')[0];
-            loadDataFromFirebase(); // <- Llamada principal a la BD
+            loadDataFromFirebase(); 
             showTab('students');
         });
 
-        // Tab Management
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.querySelectorAll('nav button').forEach(t => t.classList.remove('tab-active'));
@@ -305,7 +338,6 @@
             updateCalendar();
         }
 
-        // GUARDAR ALUMNO EN FIREBASE
         document.getElementById('studentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitStudent');
@@ -347,10 +379,7 @@
             };
 
             try {
-                // Guardar en la colección de Firestore
                 const docRef = await addDoc(collection(db, "students"), newStudent);
-                
-                // Actualizar estado local
                 newStudent.id = docRef.id;
                 students.push(newStudent);
                 
@@ -359,7 +388,6 @@
                 document.getElementById('registrationDate').value = new Date().toISOString().split('T')[0];
                 showNotification(`✅ ${newStudent.name} ha sido agregado.`, 'success');
             } catch (error) {
-                console.error("Error añadiendo documento: ", error);
                 showNotification('❌ Hubo un error al guardar', 'error');
             } finally {
                 btn.disabled = false;
@@ -408,22 +436,97 @@
                             <p class="text-xs text-gray-500">Próximo Pago:</p>
                             <p class="font-medium text-blue-600">${nextPaymentText}</p>
                         </div>
-                        <div class="flex justify-end">
-                             <button onclick="deleteStudent('${student.id}')" class="text-red-600 font-semibold p-2 rounded-md hover:bg-red-50">Eliminar</button>
+                        <div class="flex justify-end gap-2">
+                             <button onclick="openEditModal('${student.id}')" class="text-blue-600 font-semibold p-2 rounded-md hover:bg-blue-50 transition-colors">Editar</button>
+                             <button onclick="deleteStudent('${student.id}')" class="text-red-600 font-semibold p-2 rounded-md hover:bg-red-50 transition-colors">Eliminar</button>
                         </div>
                     </div>`;
                 container.appendChild(card);
             });
         }
 
-        // ELIMINAR ALUMNO EN FIREBASE
+        function openEditModal(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            document.getElementById('editStudentId').value = student.id;
+            document.getElementById('editStudentName').value = student.name;
+            document.getElementById('editStudentPhone').value = student.phone;
+            document.getElementById('editMonthlyFee').value = student.monthlyFee;
+            document.getElementById('editRegistrationDate').value = student.registrationDate || '';
+            
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveEdit');
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
+            const studentId = document.getElementById('editStudentId').value;
+            const newName = document.getElementById('editStudentName').value.trim();
+            const newPhone = document.getElementById('editStudentPhone').value;
+            const newFee = parseFloat(document.getElementById('editMonthlyFee').value);
+            const newRegistrationDate = document.getElementById('editRegistrationDate').value;
+
+            const paymentDates = [];
+            const dayOfMonth = new Date(newRegistrationDate + 'T00:00:00').getDate();
+            let currentDate = new Date(newRegistrationDate);
+            for (let i = 0; i < 60; i++) { 
+                let nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, dayOfMonth);
+                if (nextDate.getDate() !== dayOfMonth) {
+                    nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 0); 
+                }
+                paymentDates.push(nextDate.toISOString().split('T')[0]);
+            }
+
+            try {
+                const studentRef = doc(db, "students", studentId);
+                await updateDoc(studentRef, {
+                    name: newName,
+                    phone: newPhone,
+                    monthlyFee: newFee,
+                    registrationDate: newRegistrationDate,
+                    paymentDates: paymentDates 
+                });
+
+                const studentIndex = students.findIndex(s => s.id === studentId);
+                if (studentIndex !== -1) {
+                    students[studentIndex].name = newName;
+                    students[studentIndex].phone = newPhone;
+                    students[studentIndex].monthlyFee = newFee;
+                    students[studentIndex].registrationDate = newRegistrationDate;
+                    students[studentIndex].paymentDates = paymentDates;
+                }
+
+                updateAllViews();
+                closeEditModal();
+                showNotification(`✅ Alumno actualizado y calendario recalculado.`, 'success');
+            } catch (error) {
+                console.error("Error editando: ", error);
+                showNotification('❌ Error al actualizar', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Guardar';
+            }
+        });
+
         async function deleteStudent(studentId) {
             const student = students.find(s => s.id === studentId);
             if (student && confirm(`¿Estás seguro de que quieres eliminar a ${student.name}?`)) {
                 try {
                     await deleteDoc(doc(db, "students", studentId));
                     students = students.filter(s => s.id !== studentId);
-                    delete payments[studentId]; // (Limpiamos memoria, opcionalmente puedes borrar sus pagos de Firebase iterando si es necesario)
+                    delete payments[studentId]; 
                     updateAllViews();
                     showNotification(`🗑️ ${student.name} eliminado.`, 'success');
                 } catch (error) {
@@ -432,6 +535,31 @@
             }
         }
 
+        // LÓGICA DE WHATSAPP
+        function sendWhatsAppReminder(studentId, monthKey) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+
+            const [year, month] = monthKey.split('-');
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const monthName = monthNames[parseInt(month) - 1] + ' ' + year;
+
+            // Limpiar el teléfono de espacios, guiones o paréntesis
+            let phone = student.phone.replace(/\D/g, '');
+            
+            // Asumir código de México (+52) si solo escribieron 10 dígitos
+            if (phone.length === 10) {
+                phone = '52' + phone;
+            }
+
+            const message = `Hola ${student.name}, Jumping Fitness te recuerda que tu mensualidad de ${monthName} está próxima a vencer. ¡Te esperamos para seguir saltando! 🦘💪`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // VISTA DE PAGOS CON ALERTA DE 3 DÍAS
         function updatePaymentsView() {
             const selectedMonth = document.getElementById('paymentMonth').value;
             const searchTerm = document.getElementById('paymentSearch').value.toLowerCase();
@@ -452,13 +580,36 @@
             } else {
                 studentsForMonth.forEach(student => {
                     const isPaid = payments[student.id]?.[selectedMonth];
-                    if (isPaid) {
+                    let isWarning = false;
+                    let warningText = '';
+
+                    // CÁLCULO DE DÍAS RESTANTES
+                    if (!isPaid) {
+                        pendingCount++;
+                        // Buscar la fecha de cobro específica de este mes
+                        const dueDateStr = student.paymentDates.find(d => d.startsWith(selectedMonth));
+                        if (dueDateStr) {
+                            const today = new Date();
+                            today.setHours(0,0,0,0);
+                            const dueDate = new Date(dueDateStr + 'T00:00:00');
+                            const diffTime = dueDate.getTime() - today.getTime();
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            
+                            // Si faltan 3 días o menos, o si ya se pasó la fecha
+                            if (diffDays >= 0 && diffDays <= 3) {
+                                isWarning = true;
+                                warningText = ` (Vence en ${diffDays} día${diffDays !== 1 ? 's' : ''})`;
+                            } else if (diffDays < 0) {
+                                isWarning = true;
+                                warningText = ` (Vencido hace ${Math.abs(diffDays)} día${Math.abs(diffDays) !== 1 ? 's' : ''})`;
+                            }
+                        }
+                    } else {
                         paidCount++;
                         totalCollected += student.monthlyFee;
-                    } else {
-                        pendingCount++;
                     }
 
+                    // TICKET Y BOTÓN DE WHATSAPP
                     const ticketButton = isPaid 
                         ? `<button onclick="generateTicket('${student.id}', '${selectedMonth}')" class="p-2 text-gray-500 hover:text-blue-600" title="Ver Ticket">
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -467,17 +618,29 @@
                            </button>` 
                         : '';
 
+                    const whatsappButton = !isPaid 
+                        ? `<button onclick="sendWhatsAppReminder('${student.id}', '${selectedMonth}')" class="p-2 text-green-500 hover:text-green-600 transition-colors" title="Enviar Recordatorio por WhatsApp">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                               <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                             </svg>
+                           </button>`
+                        : '';
+
+                    // ASIGNAR CLASES DE ALERTA SI APLICA
+                    const cardClass = `bg-white rounded-lg p-3 shadow-sm border transition-all ${isWarning ? 'warning-pulse border-red-400' : 'border-gray-200'}`;
+
                     const card = document.createElement('div');
-                    card.className = 'bg-white rounded-lg p-3 shadow-sm border';
+                    card.className = cardClass;
                     card.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <p class="font-semibold text-gray-800">${student.name}</p>
-                                <p class="text-sm ${isPaid ? 'text-green-600' : 'text-red-600'} font-medium">
-                                    ${isPaid ? `✅ Pagado el ${formatDate(isPaid.date)}` : '⏰ Pendiente'}
+                                <p class="font-semibold ${isWarning ? 'text-red-900' : 'text-gray-800'}">${student.name}</p>
+                                <p class="text-sm ${isPaid ? 'text-green-600' : (isWarning ? 'text-red-600 font-bold' : 'text-orange-500')}">
+                                    ${isPaid ? `✅ Pagado el ${formatDate(isPaid.date)}` : `⏰ Pendiente${warningText}`}
                                 </p>
                             </div>
                             <div class="flex items-center space-x-2">
+                                ${whatsappButton}
                                 ${ticketButton}
                                 <button onclick="${isPaid ? `markAsUnpaid('${student.id}', '${selectedMonth}')` : `markAsPaid('${student.id}', '${selectedMonth}')`}" 
                                         class="px-3 py-2 text-xs font-semibold rounded-lg ${isPaid ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
@@ -547,10 +710,9 @@
             document.body.appendChild(modalBackdrop);
         }
 
-        // REGISTRAR PAGO EN FIREBASE (Colección Independiente)
         async function markAsPaid(studentId, month) {
             const student = students.find(s => s.id === studentId);
-            const paymentId = `${studentId}_${month}`; // ID Único para evitar duplicados
+            const paymentId = `${studentId}_${month}`; 
             const paymentData = {
                 studentId: studentId,
                 monthKey: month,
@@ -559,7 +721,6 @@
             };
 
             try {
-                // Escribir en la carpeta externa 'payments'
                 await setDoc(doc(db, "payments", paymentId), paymentData);
                 
                 if (!payments[studentId]) payments[studentId] = {};
@@ -572,7 +733,6 @@
             }
         }
 
-        // ANULAR PAGO EN FIREBASE
         async function markAsUnpaid(studentId, month) {
             const paymentId = `${studentId}_${month}`;
             try {
@@ -587,7 +747,6 @@
             }
         }
 
-        // Calendar Management
         function updateCalendar() {
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
@@ -668,7 +827,6 @@
         function previousMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); updateCalendar(); }
         function nextMonth() { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); updateCalendar(); }
 
-        // Data Functions
         function exportData() {
             const dataStr = JSON.stringify({ students, payments }, null, 2);
             const blob = new Blob([dataStr], {type: 'application/json'});
