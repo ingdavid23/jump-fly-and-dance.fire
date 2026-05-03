@@ -10,55 +10,45 @@
         body { 
             font-family: 'Poppins', sans-serif; 
             box-sizing: border-box;
-            background-color: #f1f5f9;
+            background-color: #ffffff; /* Fondo totalmente blanco */
         }
         
-        /* EFECTOS GLASSMORPHISM (CRISTAL LÍQUIDO) */
+        /* EFECTOS GLASSMORPHISM SOBRE FONDO BLANCO */
         .glass {
-            background: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
         
         .glass-card {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(249, 250, 251, 0.6); /* Gris ultraclaro translúcido */
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
         }
 
         .glass-input {
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(209, 213, 219, 0.8);
+            transition: all 0.2s ease;
         }
         .glass-input:focus {
-            background: rgba(255, 255, 255, 0.9);
+            background: #ffffff;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
         }
 
-        /* ANIMACIÓN DE FONDOS (BLOBS) PARA RESALTAR EL CRISTAL */
-        .blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.6;
-            animation: moveBlobs 20s infinite alternate;
-        }
-        @keyframes moveBlobs {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(20px, 50px) scale(1.1); }
-        }
-
-        /* ESTILOS DE NAVEGACIÓN TIPO PÍLDORA (TELEGRAM STYLE) */
+        /* ESTILOS DE NAVEGACIÓN TIPO PÍLDORA */
         .tab-active {
-            background: rgba(255, 255, 255, 0.8);
+            background: #ffffff;
             color: #2563eb;
-            border-radius: 9999px; /* Forma de píldora */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 9999px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             transform: scale(1.05);
+            border: 1px solid #eff6ff;
         }
         @media (min-width: 768px) {
             .tab-active {
@@ -72,9 +62,9 @@
         }
 
         /* ETIQUETAS DE ESTADO */
-        .paid-bg { background-color: rgba(209, 250, 229, 0.8); color: #065f46; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .pending-bg { background-color: rgba(254, 252, 232, 0.8); color: #854d0e; border: 1px solid rgba(234, 179, 8, 0.2); }
-        .overdue-bg { background-color: rgba(254, 226, 226, 0.8); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .paid-bg { background-color: #d1fae5; color: #065f46; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .pending-bg { background-color: #fefce8; color: #854d0e; border: 1px solid rgba(234, 179, 8, 0.2); }
+        .overdue-bg { background-color: #fee2e2; color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.2); }
         
         .calendar-day { min-height: 80px; }
         @media (min-width: 768px) { .calendar-day { min-height: 120px; } }
@@ -87,13 +77,13 @@
 
         /* ALERTA DE 3 DÍAS */
         @keyframes pulse-red-glow {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.8); }
-            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.3); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.8); }
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.2); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 0.6); }
         }
         .warning-pulse {
             animation: pulse-red-glow 2s infinite;
-            background: rgba(254, 242, 242, 0.7) !important;
+            background: #fef2f2 !important;
         }
 
         /* ESTILOS PARA IMPRESIÓN DEL TICKET */
@@ -107,39 +97,34 @@
             }
             #ticketContent { box-shadow: none; border: 2px solid #000; width: 100%; max-width: 300px; }
             .no-print { display: none !important; }
-            .blob { display: none !important; }
         }
     </style>
 </head>
-<body class="h-screen overflow-hidden text-gray-800 relative">
+<body class="h-screen overflow-hidden text-gray-800 bg-white relative">
     
-    <div class="blob bg-blue-300 w-96 h-96 rounded-full top-[-10%] left-[-10%]"></div>
-    <div class="blob bg-purple-300 w-96 h-96 rounded-full bottom-[-10%] right-[-5%] animation-delay-2000"></div>
-    <div class="blob bg-pink-200 w-80 h-80 rounded-full top-[40%] left-[30%] animation-delay-4000" style="animation-direction: reverse;"></div>
-
     <div class="flex flex-col md:flex-row h-full w-full z-10 relative">
         
-        <nav class="glass fixed bottom-4 left-4 right-4 rounded-[2rem] z-50 md:relative md:w-64 md:bottom-0 md:left-0 md:right-0 md:rounded-none md:border-r border-white/50 transition-all no-print">
+        <nav class="glass fixed bottom-4 left-4 right-4 rounded-[2rem] z-50 md:relative md:w-64 md:bottom-0 md:left-0 md:right-0 md:rounded-none md:border-r border-gray-200 transition-all no-print">
             
-            <div class="hidden md:flex flex-col items-center justify-center py-8 border-b border-white/40">
-                <img src="JUMP.PNG" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-md mb-3 border-2 border-white" onerror="this.src='https://via.placeholder.com/150'">
+            <div class="hidden md:flex flex-col items-center justify-center py-8 border-b border-gray-100">
+                <img src="JUMP.PNG" alt="Logo" class="w-20 h-20 rounded-full object-cover shadow-sm mb-3 border border-gray-100" onerror="this.src='https://via.placeholder.com/150'">
                 <h1 class="text-lg font-bold text-gray-900 text-center uppercase tracking-wide">Jumping<br>Fitness</h1>
             </div>
 
             <div class="flex flex-row md:flex-col justify-around md:justify-start p-2 md:p-4 gap-1 md:gap-3 h-full">
-                <button onclick="showTab('students')" id="studentsTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-white/40">
+                <button onclick="showTab('students')" id="studentsTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-gray-50">
                     <span class="text-xl md:text-2xl md:mr-3 mb-1 md:mb-0">👥</span>
                     <span>Alumnos</span>
                 </button>
-                <button onclick="showTab('payments')" id="paymentsTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-white/40">
+                <button onclick="showTab('payments')" id="paymentsTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-gray-50">
                     <span class="text-xl md:text-2xl md:mr-3 mb-1 md:mb-0">💳</span>
                     <span>Pagos</span>
                 </button>
-                <button onclick="showTab('calendar')" id="calendarTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-white/40">
+                <button onclick="showTab('calendar')" id="calendarTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-gray-50">
                     <span class="text-xl md:text-2xl md:mr-3 mb-1 md:mb-0">📅</span>
                     <span>Agenda</span>
                 </button>
-                <button onclick="showTab('storage')" id="storageTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-white/40">
+                <button onclick="showTab('storage')" id="storageTab" class="nav-btn flex-1 md:flex-none flex flex-col md:flex-row items-center md:justify-start py-2 md:py-3 px-2 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 rounded-full md:rounded-xl hover:bg-gray-50">
                     <span class="text-xl md:text-2xl md:mr-3 mb-1 md:mb-0">💾</span>
                     <span>Datos</span>
                 </button>
@@ -148,50 +133,50 @@
 
         <div class="flex-1 flex flex-col h-full relative overflow-hidden">
             
-            <header class="glass p-4 z-10 flex justify-between items-center border-b border-white/50">
+            <header class="bg-white/90 backdrop-blur-md p-4 z-10 flex justify-between items-center border-b border-gray-100">
                 <div class="flex items-center space-x-3 md:hidden">
-                    <img src="JUMP.PNG" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-white" onerror="this.src='https://via.placeholder.com/150'">
+                    <img src="JUMP.PNG" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/150'">
                     <h1 class="text-lg font-bold text-gray-900">Jumping Fitness</h1>
                 </div>
                 <div class="hidden md:block">
                     <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Panel de Control</h2>
                 </div>
-                <div class="text-right bg-white/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/60 shadow-sm">
+                <div class="text-right bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">
                     <p class="text-[10px] text-blue-800 font-bold uppercase tracking-widest">Activos</p>
                     <p class="text-2xl font-black text-blue-600 leading-none" id="totalStudents">0</p>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 md:pb-8 relative z-0">
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-40 md:pb-8 relative z-0">
                 <div class="max-w-6xl mx-auto w-full">
                     
                     <div id="studentsContent" class="tab-content fade-in">
-                        <div class="glass-card rounded-3xl p-5 md:p-8 mb-6">
-                            <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><span class="bg-white/60 p-2 rounded-lg">➕</span> Registrar Nuevo Alumno</h2>
+                        <div class="glass-card rounded-3xl p-5 md:p-8 mb-8">
+                            <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><span class="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">➕</span> Registrar Nuevo Alumno</h2>
                             <form id="studentForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Nombre Completo</label>
-                                    <input type="text" id="studentName" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                                    <input type="text" id="studentName" required class="glass-input w-full px-4 py-3 rounded-xl">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Teléfono (10 dígitos)</label>
-                                    <input type="tel" id="studentPhone" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                                    <input type="tel" id="studentPhone" required class="glass-input w-full px-4 py-3 rounded-xl">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Mensualidad ($)</label>
-                                    <input type="number" id="monthlyFee" required min="0" step="0.01" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                                    <input type="number" id="monthlyFee" required min="0" step="0.01" class="glass-input w-full px-4 py-3 rounded-xl">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Fecha de Inscripción</label>
-                                    <input type="date" id="registrationDate" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                                    <input type="date" id="registrationDate" required class="glass-input w-full px-4 py-3 rounded-xl">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-semibold text-gray-700 mb-1.5 ml-1">Fechas de Pago Personalizadas (opcional)</label>
-                                    <input type="text" id="customPaymentDates" placeholder="Ej: 15/01/25, 15/02/25" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all">
+                                    <input type="text" id="customPaymentDates" placeholder="Ej: 15/01/25, 15/02/25" class="glass-input w-full px-4 py-3 rounded-xl">
                                     <p class="text-xs text-gray-500 mt-1.5 ml-1 font-medium">Formato: DD/MM/AA. En blanco usa el día de inscripción.</p>
                                 </div>
                                 <div class="md:col-span-2 mt-2">
-                                    <button type="submit" id="btnSubmitStudent" class="w-full bg-blue-600/90 backdrop-blur-sm text-white px-6 py-3.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
+                                    <button type="submit" id="btnSubmitStudent" class="w-full bg-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">
                                         Agregar Alumno
                                     </button>
                                 </div>
@@ -208,30 +193,30 @@
 
                     <div id="paymentsContent" class="tab-content hidden fade-in">
                         <div class="glass-card rounded-3xl p-5 md:p-8 mb-6">
-                            <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><span class="bg-white/60 p-2 rounded-lg">💳</span> Filtrar y Buscar Pagos</h2>
+                            <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><span class="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">💳</span> Filtrar y Buscar Pagos</h2>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                <div class="bg-white/40 backdrop-blur-sm p-4 rounded-2xl border border-white/60">
+                                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                                     <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Mes de Cobro</label>
-                                    <select id="paymentMonth" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" onchange="updatePaymentsView()"></select>
+                                    <select id="paymentMonth" class="glass-input w-full px-4 py-2.5 rounded-xl" onchange="updatePaymentsView()"></select>
                                 </div>
 
-                                <div class="bg-white/40 backdrop-blur-sm p-4 rounded-2xl border border-white/60">
+                                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                                     <label class="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Buscar Alumno</label>
-                                    <input type="text" id="paymentSearch" placeholder="Escribe un nombre..." class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400" oninput="updatePaymentsView()">
+                                    <input type="text" id="paymentSearch" placeholder="Escribe un nombre..." class="glass-input w-full px-4 py-2.5 rounded-xl" oninput="updatePaymentsView()">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
-                                <div class="bg-green-400/10 backdrop-blur-md p-4 rounded-2xl border border-green-400/20 shadow-sm">
+                                <div class="bg-green-50 p-4 rounded-2xl border border-green-100 shadow-sm">
                                     <h4 class="text-xs font-black text-green-800 uppercase tracking-widest">Al Día</h4>
                                     <p class="text-4xl font-black text-green-600 mt-1" id="paidCount">0</p>
                                 </div>
-                                <div class="bg-red-400/10 backdrop-blur-md p-4 rounded-2xl border border-red-400/20 shadow-sm">
+                                <div class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm">
                                     <h4 class="text-xs font-black text-red-800 uppercase tracking-widest">Pendientes</h4>
                                     <p class="text-4xl font-black text-red-600 mt-1" id="pendingCount">0</p>
                                 </div>
-                                <div class="bg-blue-500/10 backdrop-blur-md p-4 rounded-2xl border border-blue-400/20 shadow-sm col-span-2 md:col-span-1 flex flex-col justify-center">
+                                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-sm col-span-2 md:col-span-1 flex flex-col justify-center">
                                     <h4 class="text-xs font-black text-blue-800 uppercase tracking-widest mb-1">Ingreso Mensual</h4>
                                     <p class="text-3xl md:text-4xl font-black text-blue-600" id="totalCollected">$0.00</p>
                                 </div>
@@ -244,9 +229,9 @@
                     <div id="calendarContent" class="tab-content hidden fade-in">
                         <div class="glass-card rounded-3xl p-5 md:p-8">
                             <div class="flex justify-between items-center mb-8">
-                                <button onclick="previousMonth()" class="px-5 py-2.5 glass-input rounded-xl hover:bg-white/80 font-bold transition-all shadow-sm">&larr; Ant</button>
+                                <button onclick="previousMonth()" class="px-5 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 font-bold transition-all shadow-sm">&larr; Ant</button>
                                 <h2 id="currentMonthYear" class="text-xl md:text-3xl font-black text-gray-800 capitalize tracking-tight"></h2>
-                                <button onclick="nextMonth()" class="px-5 py-2.5 glass-input rounded-xl hover:bg-white/80 font-bold transition-all shadow-sm">Sig &rarr;</button>
+                                <button onclick="nextMonth()" class="px-5 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 font-bold transition-all shadow-sm">Sig &rarr;</button>
                             </div>
 
                             <div class="grid grid-cols-7 gap-2 md:gap-3 text-center text-xs md:text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">
@@ -260,25 +245,25 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="glass-card rounded-3xl p-6 md:p-8">
                                 <div class="flex items-center gap-4 mb-5">
-                                    <div class="p-4 bg-blue-500/20 rounded-2xl text-blue-600 text-2xl backdrop-blur-md border border-blue-200/50">☁️</div>
+                                    <div class="p-4 bg-blue-50 rounded-2xl text-blue-600 text-2xl border border-blue-100 shadow-sm">☁️</div>
                                     <div>
                                         <h2 class="text-xl font-bold text-gray-900">Sincronización</h2>
                                         <p class="text-sm font-semibold text-blue-600">Conectado a Firebase</p>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-4 font-medium leading-relaxed">Tus datos están protegidos en la nube. El efecto de cristal, los menús y toda la información se actualiza en tiempo real de forma segura.</p>
+                                <p class="text-sm text-gray-600 mb-4 font-medium leading-relaxed">Tus datos están protegidos en la nube y se actualizan en tiempo real de forma segura.</p>
                             </div>
 
                             <div class="glass-card rounded-3xl p-6 md:p-8">
                                 <div class="flex items-center gap-4 mb-5">
-                                    <div class="p-4 bg-green-500/20 rounded-2xl text-green-600 text-2xl backdrop-blur-md border border-green-200/50">📥</div>
+                                    <div class="p-4 bg-green-50 rounded-2xl text-green-600 text-2xl border border-green-100 shadow-sm">📥</div>
                                     <div>
                                         <h2 class="text-xl font-bold text-gray-900">Respaldo Local</h2>
                                         <p class="text-sm font-semibold text-green-600">Copia Offline</p>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-6 font-medium leading-relaxed">Descarga una copia de seguridad en tu dispositivo en formato JSON.</p>
-                                <button onclick="exportData()" class="w-full bg-green-600/90 backdrop-blur-sm text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-500/30">Descargar Archivo</button>
+                                <button onclick="exportData()" class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-all shadow-md">Descargar Archivo</button>
                             </div>
                         </div>
                     </div>
@@ -289,32 +274,32 @@
     </div>
 
     <div id="editModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm hidden items-center justify-center z-[100] p-4 transition-opacity">
-        <div class="glass-card rounded-[2rem] p-6 md:p-8 w-full max-w-md transform transition-all shadow-2xl border-white/60 border-2">
-            <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3"><span class="bg-white/60 p-2 rounded-xl text-lg">✏️</span> Editar Alumno</h2>
+        <div class="bg-white rounded-[2rem] p-6 md:p-8 w-full max-w-md transform transition-all shadow-2xl border border-gray-100">
+            <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3"><span class="bg-gray-50 border border-gray-100 p-2 rounded-xl text-lg shadow-sm">✏️</span> Editar Alumno</h2>
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editStudentId">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Nombre Completo</label>
-                    <input type="text" id="editStudentName" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-800">
+                    <input type="text" id="editStudentName" required class="glass-input w-full px-4 py-3 rounded-xl font-medium text-gray-800">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Teléfono</label>
-                    <input type="tel" id="editStudentPhone" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-800">
+                    <input type="tel" id="editStudentPhone" required class="glass-input w-full px-4 py-3 rounded-xl font-medium text-gray-800">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Mensualidad</label>
-                        <input type="number" id="editMonthlyFee" required min="0" step="0.01" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-800">
+                        <input type="number" id="editMonthlyFee" required min="0" step="0.01" class="glass-input w-full px-4 py-3 rounded-xl font-medium text-gray-800">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1.5 ml-1">Inscripción</label>
-                        <input type="date" id="editRegistrationDate" required class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium text-gray-800">
+                        <input type="date" id="editRegistrationDate" required class="glass-input w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-800">
                     </div>
                 </div>
-                <p class="text-[11px] font-semibold text-gray-500 bg-white/40 p-3 rounded-xl border border-white/50 mt-2">Los próximos días de cobro se ajustarán automáticamente.</p>
+                <p class="text-[11px] font-semibold text-gray-500 bg-gray-50 p-3 rounded-xl border border-gray-100 mt-2">Los próximos días de cobro se ajustarán automáticamente.</p>
                 <div class="flex gap-3 mt-8">
-                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-white/50 backdrop-blur-md text-gray-700 py-3.5 rounded-xl font-bold hover:bg-white/80 transition-all border border-white/60 shadow-sm">Cancelar</button>
-                    <button type="submit" id="btnSaveEdit" class="flex-1 bg-blue-600/90 backdrop-blur-md text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">Guardar</button>
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-all">Cancelar</button>
+                    <button type="submit" id="btnSaveEdit" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md">Guardar</button>
                 </div>
             </form>
         </div>
@@ -439,7 +424,7 @@
             e.preventDefault();
             const btn = document.getElementById('btnSubmitStudent');
             btn.disabled = true;
-            btn.innerHTML = 'Guardando... <span class="animate-pulse">✨</span>';
+            btn.innerHTML = 'Guardando...';
 
             const registrationDate = document.getElementById('registrationDate').value;
             const customDates = document.getElementById('customPaymentDates').value;
@@ -517,7 +502,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'glass-card rounded-3xl p-5 md:p-6 fade-in flex flex-col justify-between transition-transform hover:-translate-y-1';
+                card.className = 'bg-white border border-gray-100 rounded-3xl p-5 md:p-6 fade-in flex flex-col justify-between transition-transform hover:-translate-y-1 shadow-sm';
                 card.innerHTML = `
                     <div>
                         <div class="flex justify-between items-start mb-3">
@@ -525,20 +510,20 @@
                             <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg ${statusClass} flex-shrink-0 ml-2 shadow-sm">${statusText}</span>
                         </div>
                         <div class="space-y-2 mb-5">
-                            <p class="text-sm font-semibold text-gray-600 flex items-center gap-2"><span class="bg-white/50 p-1.5 rounded-lg text-sm">📞</span> ${student.phone}</p>
-                            <p class="text-sm font-semibold text-gray-600 flex items-center gap-2"><span class="bg-white/50 p-1.5 rounded-lg text-sm">💰</span> $${student.monthlyFee.toFixed(2)} <span class="text-xs font-normal">/mes</span></p>
+                            <p class="text-sm font-semibold text-gray-600 flex items-center gap-2"><span class="bg-gray-50 border border-gray-100 p-1.5 rounded-lg text-sm">📞</span> ${student.phone}</p>
+                            <p class="text-sm font-semibold text-gray-600 flex items-center gap-2"><span class="bg-gray-50 border border-gray-100 p-1.5 rounded-lg text-sm">💰</span> $${student.monthlyFee.toFixed(2)} <span class="text-xs font-normal">/mes</span></p>
                         </div>
                     </div>
                     <div>
-                        <div class="border-t border-gray-300/30 my-4"></div>
+                        <div class="border-t border-gray-100 my-4"></div>
                         <div class="flex justify-between items-end">
                             <div>
                                 <p class="text-[10px] uppercase font-black text-gray-400 tracking-wider mb-0.5">Próximo Pago</p>
                                 <p class="font-black text-blue-600 text-sm">${nextPaymentText}</p>
                             </div>
                             <div class="flex gap-2">
-                                 <button onclick="openEditModal('${student.id}')" class="text-blue-700 font-bold px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 transition-colors text-sm backdrop-blur-sm">Editar</button>
-                                 <button onclick="deleteStudent('${student.id}')" class="text-red-700 font-bold px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 transition-colors text-sm backdrop-blur-sm">Borrar</button>
+                                 <button onclick="openEditModal('${student.id}')" class="text-blue-700 font-bold px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors text-sm border border-blue-100">Editar</button>
+                                 <button onclick="deleteStudent('${student.id}')" class="text-red-700 font-bold px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 transition-colors text-sm border border-red-100">Borrar</button>
                             </div>
                         </div>
                     </div>`;
@@ -616,7 +601,7 @@
                 showNotification('❌ Error al actualizar', 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Guardar Cambios';
+                btn.textContent = 'Guardar';
             }
         });
 
@@ -698,7 +683,7 @@
                     }
 
                     const ticketButton = isPaid 
-                        ? `<button onclick="generateTicket('${student.id}', '${selectedMonth}')" class="p-2.5 bg-white/50 backdrop-blur-md rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all shadow-sm border border-white/60" title="Ver Ticket">
+                        ? `<button onclick="generateTicket('${student.id}', '${selectedMonth}')" class="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all shadow-sm" title="Ver Ticket">
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                              </svg>
@@ -706,31 +691,31 @@
                         : '';
 
                     const whatsappButton = !isPaid 
-                        ? `<button onclick="sendWhatsAppReminder('${student.id}', '${selectedMonth}')" class="p-2.5 bg-green-500/20 backdrop-blur-md border border-green-300/50 rounded-xl text-green-700 hover:bg-green-500/40 transition-all shadow-sm" title="Enviar WhatsApp">
+                        ? `<button onclick="sendWhatsAppReminder('${student.id}', '${selectedMonth}')" class="p-2.5 bg-green-50 border border-green-200 rounded-xl text-green-700 hover:bg-green-100 transition-all shadow-sm" title="Enviar WhatsApp">
                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
                              </svg>
                            </button>`
                         : '';
 
-                    const cardClass = `glass-card rounded-3xl p-5 shadow-sm transition-transform hover:-translate-y-1 flex flex-col justify-between ${isWarning ? 'warning-pulse' : ''}`;
+                    const cardClass = `bg-white rounded-3xl p-5 shadow-sm border transition-transform hover:-translate-y-1 flex flex-col justify-between ${isWarning ? 'warning-pulse border-red-200' : 'border-gray-100'}`;
 
                     const card = document.createElement('div');
                     card.className = cardClass;
                     card.innerHTML = `
                         <div class="mb-5">
                             <p class="font-black text-xl ${isWarning ? 'text-red-900' : 'text-gray-800'}">${student.name}</p>
-                            <p class="text-xs font-bold mt-2 ${isPaid ? 'text-green-700 bg-green-400/20 inline-block px-2.5 py-1 rounded-lg border border-green-500/20' : (isWarning ? 'text-red-700 bg-red-400/20 inline-block px-2.5 py-1 rounded-lg border border-red-500/20' : 'text-orange-700 bg-orange-400/20 inline-block px-2.5 py-1 rounded-lg border border-orange-500/20')}">
+                            <p class="text-xs font-bold mt-2 ${isPaid ? 'text-green-700 bg-green-100 inline-block px-2.5 py-1 rounded-lg border border-green-200' : (isWarning ? 'text-red-700 bg-red-100 inline-block px-2.5 py-1 rounded-lg border border-red-200' : 'text-orange-700 bg-orange-100 inline-block px-2.5 py-1 rounded-lg border border-orange-200')}">
                                 ${isPaid ? `✅ Pagado: ${formatDate(isPaid.date)}` : `⏰ Pendiente${warningText}`}
                             </p>
                         </div>
-                        <div class="flex items-center justify-between border-t border-gray-300/30 pt-4">
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
                             <div class="flex space-x-2">
                                 ${whatsappButton}
                                 ${ticketButton}
                             </div>
                             <button onclick="${isPaid ? `markAsUnpaid('${student.id}', '${selectedMonth}')` : `markAsPaid('${student.id}', '${selectedMonth}')`}" 
-                                    class="px-5 py-2.5 text-sm font-black rounded-xl transition-all backdrop-blur-md shadow-sm ${isPaid ? 'bg-red-500/10 text-red-600 border border-red-200/50 hover:bg-red-500/20' : 'bg-blue-600/90 text-white border border-blue-400/50 hover:bg-blue-700 shadow-blue-500/30'}">
+                                    class="px-5 py-2.5 text-sm font-black rounded-xl transition-all shadow-sm border ${isPaid ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : 'bg-blue-600 text-white border-blue-700 hover:bg-blue-700'}">
                                 ${isPaid ? 'Deshacer' : 'Registrar Pago'}
                             </button>
                         </div>`;
@@ -753,11 +738,11 @@
 
             const modalBackdrop = document.createElement('div');
             modalBackdrop.id = 'ticketModal';
-            modalBackdrop.className = 'fixed inset-0 bg-gray-900/60 flex items-center justify-center z-[100] p-4 backdrop-blur-md';
+            modalBackdrop.className = 'fixed inset-0 bg-gray-900/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm';
             modalBackdrop.onclick = e => { if(e.target === modalBackdrop) e.target.remove(); };
 
             const ticketContent = `
-                <div id="ticketContent" class="bg-white p-8 w-full max-w-sm mx-auto shadow-2xl relative rounded-[2rem] border-4 border-gray-100">
+                <div id="ticketContent" class="bg-white p-8 w-full max-w-sm mx-auto shadow-2xl relative rounded-[2rem] border border-gray-100">
                     <div class="text-center border-b-2 border-dashed border-gray-200 pb-5 mb-5">
                         <img src="JUMP.PNG" alt="Logo" class="w-20 h-20 mx-auto mb-3 rounded-full object-cover shadow-sm">
                         <h2 class="text-xl font-black text-gray-800 uppercase tracking-widest">Jumping Fitness</h2>
@@ -782,14 +767,14 @@
                         </div>
                     </div>
                     <div class="border-t-2 border-dashed border-gray-200 mt-6 pt-5">
-                        <div class="flex justify-between items-center text-xl font-black text-blue-600 bg-blue-50/80 p-4 rounded-2xl border border-blue-100">
+                        <div class="flex justify-between items-center text-xl font-black text-blue-600 bg-blue-50 p-4 rounded-2xl border border-blue-100">
                             <span>TOTAL</span>
                             <span>$${student.monthlyFee.toFixed(2)}</span>
                         </div>
                     </div>
                     <div class="mt-8 flex gap-3 no-print">
-                        <button onclick="window.print()" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-black hover:bg-blue-700 shadow-lg shadow-blue-500/30">Imprimir</button>
-                        <button onclick="document.getElementById('ticketModal').remove()" class="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-black hover:bg-gray-200">Cerrar</button>
+                        <button onclick="window.print()" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-black hover:bg-blue-700 shadow-md">Imprimir</button>
+                        <button onclick="document.getElementById('ticketModal').remove()" class="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-black hover:bg-gray-200 border border-gray-200">Cerrar</button>
                     </div>
                 </div>
             `;
@@ -846,7 +831,7 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day border border-white/50 p-2 glass-input rounded-2xl text-center flex flex-col items-center cursor-pointer hover:bg-white/70 transition-all shadow-sm';
+                dayCell.className = 'calendar-day bg-white border border-gray-100 p-2 rounded-2xl text-center flex flex-col items-center cursor-pointer hover:bg-blue-50 transition-all shadow-sm';
                 dayCell.onclick = () => openDayModal(year, month, day);
                 
                 const dayString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -855,10 +840,10 @@
                 
                 let indicators = '';
                 if(scheduledStudents.length > 0) {
-                    indicators = `<div class="mt-auto bg-blue-500/20 border border-blue-300/50 text-blue-800 text-[10px] font-black px-2 py-1.5 rounded-lg w-full line-clamp-1 backdrop-blur-sm shadow-sm">${scheduledStudents.length} cobro(s)</div>`;
+                    indicators = `<div class="mt-auto bg-blue-50 border border-blue-100 text-blue-800 text-[10px] font-black px-2 py-1.5 rounded-lg w-full line-clamp-1">${scheduledStudents.length} cobro(s)</div>`;
                 }
 
-                dayCell.innerHTML = `<span class="font-black text-sm mb-1 ${isToday ? 'bg-blue-600 text-white rounded-xl w-8 h-8 flex items-center justify-center shadow-md shadow-blue-500/40' : 'text-gray-700'}">${day}</span>${indicators}`;
+                dayCell.innerHTML = `<span class="font-black text-sm mb-1 ${isToday ? 'bg-blue-600 text-white rounded-xl w-8 h-8 flex items-center justify-center shadow-md' : 'text-gray-700'}">${day}</span>${indicators}`;
                 grid.appendChild(dayCell);
             }
         }
@@ -871,36 +856,36 @@
             relevantStudents.sort((a, b) => a.name.localeCompare(b.name));
             
             const modalBackdrop = document.createElement('div');
-            modalBackdrop.className = 'fixed inset-0 bg-gray-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4';
+            modalBackdrop.className = 'fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4';
             modalBackdrop.onclick = e => { if(e.target === modalBackdrop) e.target.remove(); };
 
             const modal = document.createElement('div');
-            modal.className = 'glass-card rounded-[2rem] shadow-2xl max-w-md w-full max-h-[85vh] overflow-hidden flex flex-col border-white/60 border-2';
+            modal.className = 'bg-white rounded-[2rem] shadow-2xl max-w-md w-full max-h-[85vh] overflow-hidden flex flex-col border border-gray-100';
 
             let studentListHTML = relevantStudents.length > 0 ? relevantStudents.map(student => {
                 const isPaid = payments[student.id]?.[monthKey];
                 return `
-                    <div class="flex items-center justify-between bg-white/50 backdrop-blur-md border border-white/60 p-5 rounded-2xl mb-4 shadow-sm">
+                    <div class="flex items-center justify-between bg-gray-50 border border-gray-100 p-5 rounded-2xl mb-4 shadow-sm">
                         <div>
                             <p class="font-black text-gray-800 text-lg">${student.name}</p>
                             <p class="text-[11px] font-bold uppercase tracking-wider mt-1.5 ${isPaid ? 'text-green-600' : 'text-orange-600'}">${isPaid ? '✅ Ya pagó' : '⏰ Esperando pago'}</p>
                         </div>
                         <button onclick="${isPaid ? `markAsUnpaidFromModal('${student.id}', '${monthKey}', this)` : `markAsPaidFromModal('${student.id}', '${monthKey}', this)`}"
-                                class="px-5 py-2.5 text-xs font-black rounded-xl transition-all shadow-sm ${isPaid ? 'bg-red-500/10 text-red-600 hover:bg-red-500/20 border border-red-200/50' : 'bg-blue-600/90 text-white hover:bg-blue-700 border border-blue-400/50'}">
+                                class="px-5 py-2.5 text-xs font-black rounded-xl transition-all shadow-sm ${isPaid ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' : 'bg-blue-600 text-white hover:bg-blue-700'}">
                             ${isPaid ? 'Anular' : 'Cobrar'}
                         </button>
                     </div>`;
             }).join('') : `<div class="text-center text-gray-500 py-10"><p class="text-4xl mb-4 opacity-50">🍃</p><p class="font-semibold">Día libre. No hay cobros programados.</p></div>`;
 
             modal.innerHTML = `
-                <div class="p-6 md:p-8 border-b border-white/40">
+                <div class="p-6 md:p-8 border-b border-gray-100">
                     <h3 class="text-2xl font-black text-gray-900">Agenda: ${formatDate(dayString)}</h3>
                 </div>
                 <div class="p-6 md:p-8 overflow-y-auto flex-1">
                     ${studentListHTML}
                 </div>
-                <div class="p-5 border-t border-white/40 bg-white/30 backdrop-blur-md">
-                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-white/60 text-gray-800 py-3.5 rounded-xl font-black hover:bg-white/80 transition-all border border-white/80 shadow-sm">Cerrar Agenda</button>
+                <div class="p-5 border-t border-gray-100 bg-gray-50">
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-white text-gray-800 py-3.5 rounded-xl font-black hover:bg-gray-100 transition-all border border-gray-200 shadow-sm">Cerrar Agenda</button>
                 </div>`;
             
             modalBackdrop.appendChild(modal);
@@ -928,8 +913,8 @@
             const existing = document.querySelector('.notification');
             if (existing) existing.remove();
             const notification = document.createElement('div');
-            const colors = { success: 'bg-green-500/90 shadow-green-500/30', warning: 'bg-orange-500/90 shadow-orange-500/30', error: 'bg-red-600/90 shadow-red-500/30' };
-            notification.className = `notification fixed top-6 right-1/2 transform translate-x-1/2 md:translate-x-0 md:right-8 md:left-auto z-[9999] px-6 py-3.5 rounded-full shadow-lg text-white font-bold text-sm fade-in backdrop-blur-md border border-white/20 ${colors[type] || 'bg-blue-600/90'}`;
+            const colors = { success: 'bg-green-600', warning: 'bg-orange-500', error: 'bg-red-600' };
+            notification.className = `notification fixed top-6 right-1/2 transform translate-x-1/2 md:translate-x-0 md:right-8 md:left-auto z-[9999] px-6 py-3.5 rounded-full shadow-lg text-white font-bold text-sm fade-in border border-white/20 ${colors[type] || 'bg-blue-600'}`;
             notification.textContent = message;
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
